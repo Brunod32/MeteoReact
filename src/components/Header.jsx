@@ -36,8 +36,7 @@ function Header() {
     const formattedCurrentDate = new Date().toLocaleDateString('fr-FR', options);
     const hours = currentTime.getHours();
     const minutes = currentTime.getMinutes();
-    const secondes = currentTime.getSeconds();
-
+    const secondes = currentTime.getSeconds() < 10 ? '0' + currentTime.getSeconds() : currentTime.getSeconds();
 
     return (
         <>
