@@ -4,6 +4,8 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
     border-bottom: 5px solid white;
     margin: 0rem 5rem;
+
+   
 `;
 
 const Title = styled.h1`
@@ -42,7 +44,7 @@ function Header() {
         <>
             <Wrapper>
                 <Title>Météo</Title>
-                <DateWrapper>Nos sommes le {formattedCurrentDate} et il est {hours}:{minutes}:{secondes}</DateWrapper>
+                <DateWrapper>Nous sommes le {formattedCurrentDate} et il est {hours}:{minutes}:{secondes}</DateWrapper>
             </Wrapper>
         </>
     )

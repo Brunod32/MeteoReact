@@ -9,6 +9,10 @@ const Wrapper = styled.div`
 const Title = styled.h2`
     color: blueviolet;
     padding-bottom: 1.5rem;
+
+    @media (max-width: 900px) {
+        text-align: center;
+    }
 `
 const WeatherWrapper = styled.div`
     display: flex;
@@ -40,6 +44,7 @@ const WeatherTile = styled.div`
     font-weight: bold;
     background-color: rgba(95, 93, 93, 0.5);
 
+
     p {
         display: flex;
         align-items: center;
@@ -48,6 +53,11 @@ const WeatherTile = styled.div`
 
     .bi {
         font-size: 2em;
+    }
+
+    @media (max-width: 900px) {
+        height: 18rem;
+        width: 24rem;
     }
 `
 

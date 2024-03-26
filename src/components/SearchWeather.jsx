@@ -11,7 +11,7 @@ const Wrapper = styled.div`
 
     @media (max-width: 900px) {
         flex-wrap: wrap;
-        justify-content: space-around;
+        justify-content: center;
         gap: 2rem;
     }
 `;
@@ -20,6 +20,12 @@ const WrapperSearch = styled.div`
     display: flex;
     justify-content: center;
     gap: 2rem;
+    
+    @media (max-width: 900px) {
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 2rem;
+    }
 `;
 
 const InputSeach = styled.input`
