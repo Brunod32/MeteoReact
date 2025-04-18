@@ -1,21 +1,41 @@
 import styled from 'styled-components';
 import { FaSearch } from "react-icons/fa";
 import { BsFillGeoAltFill } from "react-icons/bs";
+import { useState } from 'react';
 
-export default function SearchWeather() {
+export default function SearchWeather({ onSearch }) {
+  const [city, setCity] = useState('');
+
+  const handleInputChange = (event) => {
+    setCity(event.target.value);
+  };
+
+  const handleSearchClick = () => {
+    if (city.trim()) {
+      onSearch(city.trim());
+    }
+  };
+
   return (
-      <Wrapper>
-          <LocationButton title="Me géolocaliser">
-              <BsFillGeoAltFill style={{ color: 'blue', fontSize: '24px' }} />
-          </LocationButton>
-          <WrapperSearch>
-            <InputSeach type="text" id="inputCity" title="Rechercher" placeholder="Quel temps fait-il  à ..."></InputSeach>
-            <BtnSearch>
-                <FaSearch style={{ color: 'blue', fontSize: '24px' }} />
-            </BtnSearch>    
-          </WrapperSearch>
-      </Wrapper>
-  )
+    <Wrapper>
+        <LocationButton title="Me géolocaliser">
+            <BsFillGeoAltFill style={{ color: 'blue', fontSize: '24px' }} />
+        </LocationButton>
+        <WrapperSearch>
+            <InputSeach
+            type="text"
+            id="inputCity"
+            title="Rechercher"
+            placeholder="Quel temps fait-il à ..."
+            value={city}
+            onChange={handleInputChange}
+            />
+            <BtnSearch onClick={handleSearchClick}>
+            <FaSearch style={{ color: 'blue', fontSize: '24px' }} />
+            </BtnSearch>
+        </WrapperSearch>
+    </Wrapper>
+  );
 }
 
 const Wrapper = styled.div`

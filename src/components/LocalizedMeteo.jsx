@@ -1,80 +1,114 @@
 import styled from 'styled-components';
+import { useState, useEffect } from 'react';
 
-export default function LocalizedMeteo() {
-    const apiKey = '7d4a696f4e46055b073d599ec89e157b';
-    // localisation from API Geolocalisation
-    navigator.geolocation.getCurrentPosition(
-        function (position) {
-            //console.log(position)
+const apiKey = '7d4a696f4e46055b073d599ec89e157b';
 
-            // Call to openWeather API with city for parameter
-            let apiCall = function (lat, lon) {
-                let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=fr`;
+export default function LocalizedMeteo({ city }) { // city est maintenant une prop
+    const [weatherData, setWeatherData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-                // Current weather
-                fetch(url)
-                    .then(response => response.json()
-                        .then((data) => {   
-                            //console.log(data);
+    useEffect(() => {
+        setLoading(true);
+        setError(null);
 
-                        switch (data.weather[0].main) {
-                            case 'Thunderstorm':
-                                document.querySelector('#city').innerHTML =
-                                "<i class='bi bi-geo-alt'></i> " + data.name + ", tendance <i class='bi bi-cloud-lightning'></i>";
-                                break;
-                            case 'Clouds':
-                                document.querySelector('#city').innerHTML =
-                                "<i class='bi bi-geo-alt'></i> " + data.name + ", tendance <i class='bi bi-cloud'></i>";
-                                break;
-                            case 'Rain':
-                                document.querySelector('#city').innerHTML =
-                                "<i class='bi bi-geo-alt'></i> " + data.name + ", tendance <i class='bi bi-cloud-drizzle'></i>";
-                                break;
-                            case 'Clear':
-                                document.querySelector('#city').innerHTML =
-                                "<i class='bi bi-geo-alt'></i> " + data.name + ", tendance <i class='bi bi-brightness-high'></i>";
-                                break;
-                            case 'Mist' || 'Smoke' || 'Haze' || 'Dust' || 'Fog' || 'Sand' || 'Ash' || 'Squall' || 'Tornado':
-                                document.querySelector('#city').innerHTML =
-                                "<i class='bi bi-geo-alt'></i> " + data.name + ", tendance <i class='bi bi-cloud-drizzle'></i>";
-                                break;
-                            case 'Snow':
-                                document.querySelector('#city').innerHTML =
-                                "<i class='bi bi-geo-alt'></i> " + data.name + ", tendance <i class='bi bi-cloud-snow'></i>";
-                                break;              
-                            default:
-                                document.querySelector('#city').innerHTML = "Tendance : inconnue";
-                                break;
+        const fetchWeather = async () => {
+            let url = '';
+            if (city) {
+                // Recherche par ville si une ville est fournie en prop
+                url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=fr`;
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP! statut: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    setWeatherData(data);
+                    setLoading(false);
+                } catch (err) {
+                    setError(err.message);
+                    setLoading(false);
+                }
+            } else {
+                // Géolocalisation uniquement si aucune ville n'est fournie
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const { latitude, longitude } = position.coords;
+                        url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=fr`;
+                        try {
+                            const response = await fetch(url);
+                            if (!response.ok) {
+                                throw new Error(`Erreur HTTP! statut: ${response.status}`);
+                            }
+                            const data = await response.json();
+                            setWeatherData(data);
+                            setLoading(false);
+                        } catch (err) {
+                            setError(err.message);
+                            setLoading(false);
                         }
-
-                        document.querySelector('#temp').innerHTML =
-                            "<i class='bi bi-thermometer-half'></i> "+ data.main.temp + '°C' + ", ressenti " + data.main.feels_like + '°C';
-                        document.querySelector('#wind').innerHTML =
-                            "<i class='bi bi-wind'></i> " + data.wind.speed + ' km/h';
-                        document.querySelector('#humidity').innerHTML =
-                            "<i class='bi bi-droplet'></i> " + data.main.humidity + ' %';
-
-                    })
-                ).catch(err => console.log('Erreur: ' + err));
+                    },
+                    (err) => {
+                        setError("Erreur de géolocalisation.");
+                        setLoading(false);
+                        console.error("Erreur de géolocalisation:", err);
+                    }
+                );
+                return; // Important de sortir ici
             }
-            apiCall(position.coords.latitude, position.coords.longitude)
-        }
-    )
+            // Si une URL de recherche par ville a été construite, l'appel API est déjà fait ci-dessus.
+            // On ne refait pas l'appel ici.
+        };
 
-    return (
-        <>
+        fetchWeather();
+    }, [city]); // L'effet se relance si la prop 'city' change
+
+    const getWeatherIcon = (main) => {
+        switch (main) {
+            case 'Thunderstorm': return <i className='bi bi-cloud-lightning'></i>;
+            case 'Clouds': return <i className='bi bi-cloud'></i>;
+            case 'Rain': return <i className='bi bi-cloud-drizzle'></i>;
+            case 'Clear': return <i className='bi bi-brightness-high'></i>;
+            case 'Mist': case 'Smoke': case 'Haze': case 'Dust': case 'Fog': case 'Sand': case 'Ash': case 'Squall': case 'Tornado':
+                return <i className='bi bi-cloud-fog2'></i>;
+            case 'Snow': return <i className='bi bi-cloud-snow'></i>;
+            default: return null;
+        }
+    };
+
+    if (loading) {
+        return <p>Chargement de la météo...</p>;
+    }
+
+    if (error) {
+        return <p>Erreur: {error}</p>;
+    }
+
+    if (weatherData) {
+        return (
             <Wrapper>
-                <Title>Météo du moment</Title>
+                <Title>Météo {weatherData.name ? `à ${weatherData.name}` : 'du moment'}</Title>
                 <WeatherWrapper>
-                    <WeatherTile id="city" $backgroundurl="src/assets/img/map.webp">Ville: </WeatherTile>
-                    <WeatherTile id="temp" $backgroundurl="src/assets/img/weather.webp">Température: </WeatherTile>
-                    <WeatherTile id="wind" $backgroundurl="src/assets/img/wind.webp">Vent: </WeatherTile>
-                    <WeatherTile id="humidity" $backgroundurl="src/assets/img/drops.jpg">Taux d'humidité: </WeatherTile>
+                    <WeatherTile id="city" $backgroundurl="src/assets/img/map.webp">
+                        Ville: <p><i className='bi bi-geo-alt'></i> {weatherData.name}</p>
+                    </WeatherTile>
+                    <WeatherTile id="temp" $backgroundurl="src/assets/img/weather.webp">
+                        Température: <p><i className='bi bi-thermometer-half'></i> {weatherData.main.temp}°C, ressenti {weatherData.main.feels_like}°C</p>
+                    </WeatherTile>
+                    <WeatherTile id="wind" $backgroundurl="src/assets/img/wind.webp">
+                        Vent: <p><i className='bi bi-wind'></i> {weatherData.wind.speed} km/h</p>
+                    </WeatherTile>
+                    <WeatherTile id="humidity" $backgroundurl="src/assets/img/drops.jpg">
+                        Humidité: <p><i className='bi bi-droplet'></i> {weatherData.main.humidity} %</p>
+                    </WeatherTile>
+                    <WeatherTile $backgroundurl="src/assets/img/weather_icon.webp">
+                        Tendance: <p>{getWeatherIcon(weatherData.weather[0].main)} {weatherData.weather[0].description}</p>
+                    </WeatherTile>
                 </WeatherWrapper>
             </Wrapper>
-      
-      </>
-  )
+        );
+    }
+    return null;
 }
 
 const Wrapper = styled.div`

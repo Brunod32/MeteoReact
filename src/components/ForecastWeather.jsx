@@ -12,27 +12,80 @@ import { FaRegSnowflake } from "react-icons/fa";
 import { RiMistFill } from "react-icons/ri";
 import { CiBrightnessDown } from "react-icons/ci";
 
-export default function ForecastWeather() {
+export default function ForecastWeather({ city }) {
     const [forecastData, setForecastData] = useState([]);
     const [cityName, setCityName] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const apiKey = '7d4a696f4e46055b073d599ec89e157b';
+        setLoading(true);
+        setError(null);
 
-        navigator.geolocation.getCurrentPosition(
-            function (position) {
-                const urlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${apiKey}&units=metric&lang=fr`;
+        let urlForecast = '';
 
-                fetch(urlForecast)
-                    .then(response => response.json())
-                    .then(data => {
-                        setCityName(data.city.name);
-                        setForecastData(data.list);
-                    })
-                    .catch(err => console.log('Erreur: ' + err));
+        if (city) {
+            // Utiliser le nom de la ville si fourni
+            urlForecast = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=fr`;
+        } else {
+            // Géolocalisation si aucune ville n'est fournie
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    urlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${apiKey}&units=metric&lang=fr`;
+                    fetchForecastData(urlForecast);
+                },
+                error => {
+                    setError("Erreur de géolocalisation pour les prévisions.");
+                    setLoading(false);
+                    console.error("Erreur de géolocalisation (prévisions):", error);
+                }
+            );
+            return;
+        }
+
+        if (urlForecast) {
+            fetchForecastData(urlForecast);
+        }
+
+        async function fetchForecastData(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP! statut: ${response.status}`);
+                }
+                const data = await response.json();
+                setCityName(data.city?.name || city || "Localisation");
+                setForecastData(data.list);
+                setLoading(false);
+            } catch (err) {
+                setError(`Erreur lors de la récupération des prévisions pour ${city || 'la localisation'}: ${err.message}`);
+                setLoading(false);
+                console.error("Erreur (prévisions):", err);
             }
-        )
-    }, []);
+        }
+
+    }, [city]); // L'effet se relance si la prop 'city' change
+
+    const getWeatherIcon = (main) => {
+        switch (main) {
+            case 'Thunderstorm': return <IoIosThunderstorm />;
+            case 'Rain': return <IoRainyOutline />;
+            case 'Snow': return <FaRegSnowflake />;
+            case 'Mist': return <RiMistFill />;
+            case 'Clear': return <CiBrightnessDown />;
+            case 'Clouds': return <IoSunnyOutline />;
+            default: return <span>Tendance : inconnue</span>;
+        }
+    };
+
+    if (loading) {
+        return <Wrapper><Title>Chargement des prévisions...</Title></Wrapper>;
+    }
+
+    if (error) {
+        return <Wrapper><Title>Erreur lors du chargement des prévisions</Title><p>{error}</p></Wrapper>;
+    }
 
     return (
         <Wrapper>
@@ -45,40 +98,26 @@ export default function ForecastWeather() {
                                 <IoCalendar /> {forecast.dt_txt}
                             </HeaderTile>
                             <div>
-                                {forecast.weather[0].main === 'Thunderstorm' ? (
-                                    <IoIosThunderstorm />
-                                ) : forecast.weather[0].main === 'Rain' ? (
-                                    <IoRainyOutline />
-                                ) : forecast.weather[0].main === 'Snow' ? (
-                                    <FaRegSnowflake />
-                                ) : forecast.weather[0].main === 'Mist' ? (
-                                    <RiMistFill />
-                                ) : forecast.weather[0].main === 'Clear' ? (
-                                    <CiBrightnessDown />
-                                ) : forecast.weather[0].main === 'Clouds' ? (
-                                    <IoSunnyOutline />
-                                ) : (
-                                    <span>Tendance : inconnue</span>
-                                )}
+                                {getWeatherIcon(forecast.weather[0].main)}
                             </div>
                             <div>
-                            <FaThermometerHalf /> {forecast.main.temp}°C
+                                <FaThermometerHalf /> {forecast.main.temp}°C
                             </div>
                             <div>
-                            <IoStopwatchOutline /> {forecast.main.pressure}
+                                <IoStopwatchOutline /> {forecast.main.pressure} hPa
                             </div>
                             <div>
-                            <FaWind /> {forecast.wind.speed} km/h
+                                <FaWind /> {forecast.wind.speed} m/s
                             </div>
                             <div>
-                            <BsDroplet /> {forecast.main.humidity} %
+                                <BsDroplet /> {forecast.main.humidity} %
                             </div>
                         </WeatherInfo>
                     </WeatherTile>
                 ))}
             </WeatherForeCastContainer>
         </Wrapper>
-    )
+    );
 }
 
 const Wrapper = styled.div`
