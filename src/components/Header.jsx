@@ -1,27 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components'
 
-const Wrapper = styled.div`
-    border-bottom: 5px solid white;
-    margin: 0rem 5rem;
-
-   
-`;
-
-const Title = styled.h1`
-    margin: 1rem 0rem;
-    color: blueviolet;
-    text-align: center;
-`;
-
-const DateWrapper = styled.div`
-    display: flex;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin: 3rem;
-    text-align: center;
-`;
-
 function Header() {
 
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -52,3 +31,22 @@ function Header() {
 }
 
 export default Header;
+
+const Wrapper = styled.div`
+    border-bottom: 5px solid white;
+    margin: 0rem 5rem;
+`;
+
+const Title = styled.h1`
+    margin: 1rem 0rem;
+    color: blueviolet;
+    text-align: center;
+`;
+
+const DateWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 3rem;
+    text-align: center;
+`;

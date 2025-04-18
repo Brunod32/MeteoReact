@@ -12,67 +12,6 @@ import { FaRegSnowflake } from "react-icons/fa";
 import { RiMistFill } from "react-icons/ri";
 import { CiBrightnessDown } from "react-icons/ci";
 
-const Wrapper = styled.div`
-    border-bottom: 5px solid white;
-    padding: 3rem;
-    margin: 0rem 4rem;
-`;
-
-const Title = styled.h2`
-    color: blueviolet;
-    padding-bottom: 1.5rem;
-`
-
-const WeatherForeCastContainer = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-`;
-
-const HeaderTile = styled.h3`
-    text-align: center;
-`;
-
-const WeatherTile = styled.div`
-    border: 2px solid blueviolet;
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: calc(100% - 2rem); /* Prendre toute la largeur, moins les marges */
-    max-width: 20rem; /* Limiter la largeur maximale */
-    font-size: 1.5rem;
-    background-color: #5f5d5d;
-    background-image: ${(props) => props.backgroundurl ? `linear-gradient(rgba(95, 93, 93, 0.5), rgba(95, 93, 93, 0.5)), url(${props.backgroundurl})` : 'none'};
-    background-size: cover;
-    background-position: center;
-    color: black;
-    font-weight: bold;
-    background-color: rgba(235, 228, 228, 0.5);
-    overflow: hidden;
-
-    @media (min-width: 900px) {
-        width: calc(50% - 2rem); /* Afficher 4 éléments par ligne, moins les marges */
-    }
-`
-
-const WeatherInfo = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 10px;
-    text-align: center; /* Centrer le texte horizontalement */
-
-    & > * {
-        margin: auto; /* Centrer les éléments en ligne */
-    }
-`
-
 export default function ForecastWeather() {
     const [forecastData, setForecastData] = useState([]);
     const [cityName, setCityName] = useState("");
@@ -141,3 +80,64 @@ export default function ForecastWeather() {
         </Wrapper>
     )
 }
+
+const Wrapper = styled.div`
+    border-bottom: 5px solid white;
+    padding: 3rem;
+    margin: 0rem 4rem;
+`;
+
+const Title = styled.h2`
+    color: blueviolet;
+    padding-bottom: 1.5rem;
+`
+
+const WeatherForeCastContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+`;
+
+const HeaderTile = styled.h3`
+    text-align: center;
+`;
+
+const WeatherTile = styled.div`
+    border: 2px solid blueviolet;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 2rem); /* Prendre toute la largeur, moins les marges */
+    max-width: 20rem; /* Limiter la largeur maximale */
+    font-size: 1.5rem;
+    background-color: #5f5d5d;
+    background-image: ${(props) => props.backgroundurl ? `linear-gradient(rgba(95, 93, 93, 0.5), rgba(95, 93, 93, 0.5)), url(${props.backgroundurl})` : 'none'};
+    background-size: cover;
+    background-position: center;
+    color: black;
+    font-weight: bold;
+    background-color: rgba(235, 228, 228, 0.5);
+    overflow: hidden;
+
+    @media (min-width: 900px) {
+        width: calc(50% - 2rem); /* Afficher 4 éléments par ligne, moins les marges */
+    }
+`
+
+const WeatherInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    text-align: center; /* Centrer le texte horizontalement */
+
+    & > * {
+        margin: auto; /* Centrer les éléments en ligne */
+    }
+`

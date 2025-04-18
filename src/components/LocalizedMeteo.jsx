@@ -1,70 +1,9 @@
 import styled from 'styled-components';
 
-const Wrapper = styled.div`
-    border-bottom: 5px solid white;
-    padding: 3rem;
-    margin: 0rem 4rem;
-`;
-
-const Title = styled.h2`
-    color: blueviolet;
-    padding-bottom: 1.5rem;
-
-    @media (max-width: 900px) {
-        text-align: center;
-    }
-`
-const WeatherWrapper = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 50px;
-
-    @media (max-width: 900px) {
-        flex-wrap: wrap;
-        justify-content: space-around;
-    }
-`
-const WeatherTile = styled.div`
-    border: 2px solid blueviolet;
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 20rem;
-    height: 15rem;
-    font-size: 1.5rem;
-    background-color: #5f5d5d;
-    background-image: ${(props) => props.backgroundurl ? `linear-gradient(rgba(95, 93, 93, 0.5), rgba(95, 93, 93, 0.5)), url(${props.backgroundurl})` : 'none'};
-    background-size: cover;
-    background-position: center;
-    color: black;
-    font-weight: bold;
-    background-color: rgba(95, 93, 93, 0.5);
-
-
-    p {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .bi {
-        font-size: 2em;
-    }
-
-    @media (max-width: 900px) {
-        height: 18rem;
-        width: 24rem;
-    }
-`
-
 export default function LocalizedMeteo() {
     const apiKey = '7d4a696f4e46055b073d599ec89e157b';
     // localisation from API Geolocalisation
-    let location = navigator.geolocation.getCurrentPosition(
+    navigator.geolocation.getCurrentPosition(
         function (position) {
             //console.log(position)
 
@@ -119,21 +58,82 @@ export default function LocalizedMeteo() {
                 ).catch(err => console.log('Erreur: ' + err));
             }
             apiCall(position.coords.latitude, position.coords.longitude)
-
         }
     )
+
     return (
         <>
             <Wrapper>
                 <Title>Météo du moment</Title>
                 <WeatherWrapper>
-                    <WeatherTile id="city" backgroundurl="src/assets/img/map.webp">Ville: </WeatherTile>
-                    <WeatherTile id="temp" backgroundurl="src/assets/img/weather.webp">Température: </WeatherTile>
-                    <WeatherTile id="wind" backgroundurl="src/assets/img/wind.webp">Vent: </WeatherTile>
-                    <WeatherTile id="humidity" backgroundurl="src/assets/img/drops.jpg">Taux d'humidité: </WeatherTile>
+                    <WeatherTile id="city" $backgroundurl="src/assets/img/map.webp">Ville: </WeatherTile>
+                    <WeatherTile id="temp" $backgroundurl="src/assets/img/weather.webp">Température: </WeatherTile>
+                    <WeatherTile id="wind" $backgroundurl="src/assets/img/wind.webp">Vent: </WeatherTile>
+                    <WeatherTile id="humidity" $backgroundurl="src/assets/img/drops.jpg">Taux d'humidité: </WeatherTile>
                 </WeatherWrapper>
             </Wrapper>
       
       </>
   )
 }
+
+const Wrapper = styled.div`
+    border-bottom: 5px solid white;
+    padding: 3rem;
+    margin: 0rem 4rem;
+`;
+
+const Title = styled.h2`
+    color: blueviolet;
+    padding-bottom: 1.5rem;
+
+    @media (max-width: 900px) {
+        text-align: center;
+    }
+`
+const WeatherWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    @media (max-width: 900px) {
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+`
+const WeatherTile = styled.div`
+    border: 2px solid blueviolet;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 20rem;
+    height: 15rem;
+    font-size: 1.5rem;
+    background-color: #5f5d5d;
+    background-image: ${(props) => props.$backgroundurl ? `linear-gradient(rgba(95, 93, 93, 0.5), rgba(95, 93, 93, 0.5)), url(${props.$backgroundurl})` : 'none'};
+    background-size: cover;
+    background-position: center;
+    color: black;
+    font-weight: bold;
+    background-color: rgba(95, 93, 93, 0.5);
+
+
+    p {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bi {
+        font-size: 2em;
+    }
+
+    @media (max-width: 900px) {
+        height: 18rem;
+        width: 24rem;
+    }
+`
